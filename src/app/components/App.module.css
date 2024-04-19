@@ -1,0 +1,40 @@
+.main {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.btn_lottery {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #d72e36;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  border: none;
+  outline: none;
+  transition: background-color 0.3s;
+}
+
+.btn_lottery:hover {
+  background-color: #fff;
+  color: #d72e36;
+}
+
+#input {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+  width: 100px;
+}
+
+.label {
+  font-weight: bold;
+}
