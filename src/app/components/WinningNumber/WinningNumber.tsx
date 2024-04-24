@@ -1,20 +1,34 @@
 import React, { useEffect } from "react";
 import styles from "@/app/components/WinningNumber/WinningNumber.module.css";
 
-type props = {
+type Props = {
   winningNumber: number;
 };
 
-function WinningNumber({ winningNumber }: props) {
-  useEffect(() => {
-    let W = window.innerWidth;
-    let H = window.innerHeight;
-    const canvas = window.document.getElementById("canvas");
-    const context = canvas.getContext("2d");
-    const maxConfettis = 150;
-    const particles: any[] = [];
+type ConfettiParticle = {
+  x: number;
+  y: number;
+  r: number;
+  d: number;
+  color: string;
+  tilt: number;
+  tiltAngleIncremental: number;
+  tiltAngle: number;
+  draw: () => void;
+};
 
-    const possibleColors = [
+function WinningNumber({ winningNumber }: Props): JSX.Element {
+  const initialAnimation = () => {
+    let W: number = window.innerWidth;
+    let H: number = window.innerHeight;
+    const canvas: HTMLCanvasElement | null = window.document.getElementById(
+      "canvas"
+    ) as HTMLCanvasElement;
+    const context: CanvasRenderingContext2D | null = canvas?.getContext("2d");
+    const maxConfettis: number = 150;
+    const particles: ConfettiParticle[] = [];
+
+    const possibleColors: string[] = [
       "DodgerBlue",
       "OliveDrab",
       "Gold",
@@ -30,29 +44,41 @@ function WinningNumber({ winningNumber }: props) {
       "Crimson",
     ];
 
-    function randomFromTo(from, to) {
+    function randomFromTo(from: number, to: number): number {
       return Math.floor(Math.random() * (to - from + 1) + from);
     }
 
-    function confettiParticle() {
-      this.x = Math.random() * W; // x
-      this.y = Math.random() * H - H; // y
-      this.r = randomFromTo(11, 33); // radius
-      this.d = Math.random() * maxConfettis + 11;
-      this.color =
-        possibleColors[Math.floor(Math.random() * possibleColors.length)];
-      this.tilt = Math.floor(Math.random() * 33) - 11;
-      this.tiltAngleIncremental = Math.random() * 0.07 + 0.05;
-      this.tiltAngle = 0;
+    class ConfettiParticleClass {
+      x: number;
+      y: number;
+      r: number;
+      d: number;
+      color: string;
+      tilt: number;
+      tiltAngleIncremental: number;
+      tiltAngle: number;
 
-      this.draw = function () {
+      constructor() {
+        this.x = Math.random() * W; // x
+        this.y = Math.random() * H - H; // y
+        this.r = randomFromTo(11, 33); // radius
+        this.d = Math.random() * maxConfettis + 11;
+        this.color =
+          possibleColors[Math.floor(Math.random() * possibleColors.length)];
+        this.tilt = Math.floor(Math.random() * 33) - 11;
+        this.tiltAngleIncremental = Math.random() * 0.07 + 0.05;
+        this.tiltAngle = 0;
+      }
+
+      draw() {
+        if (!context) return;
         context.beginPath();
         context.lineWidth = this.r / 2;
         context.strokeStyle = this.color;
         context.moveTo(this.x + this.tilt + this.r / 3, this.y);
         context.lineTo(this.x + this.tilt, this.y + this.tilt + this.r / 5);
         return context.stroke();
-      };
+      }
     }
 
     function Draw() {
@@ -61,15 +87,16 @@ function WinningNumber({ winningNumber }: props) {
       // Magical recursive functional love
       requestAnimationFrame(Draw);
 
+      if (!context) return;
       context.clearRect(0, 0, W, window.innerHeight);
 
-      for (var i = 0; i < maxConfettis; i++) {
+      for (let i = 0; i < maxConfettis; i++) {
         results.push(particles[i].draw());
       }
 
-      let particle = {};
-      let remainingFlakes = 0;
-      for (var i = 0; i < maxConfettis; i++) {
+      let particle: ConfettiParticle;
+      let remainingFlakes: number = 0;
+      for (let i = 0; i < maxConfettis; i++) {
         particle = particles[i];
 
         particle.tiltAngle += particle.tiltAngleIncremental;
@@ -95,6 +122,7 @@ function WinningNumber({ winningNumber }: props) {
       function () {
         W = window.innerWidth;
         H = window.innerHeight;
+        if (!canvas) return;
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
       },
@@ -102,15 +130,20 @@ function WinningNumber({ winningNumber }: props) {
     );
 
     // Push new confetti objects to `particles[]`
-    for (var i = 0; i < maxConfettis; i++) {
-      particles.push(new confettiParticle());
+    for (let i = 0; i < maxConfettis; i++) {
+      particles.push(new ConfettiParticleClass());
     }
 
     // Initialize
+    if (!canvas) return <></>;
     canvas.width = W;
     canvas.height = H;
     Draw();
+  };
+  useEffect(() => {
+    initialAnimation();
   }, []);
+
   return (
     <>
       <canvas id="canvas"></canvas>
