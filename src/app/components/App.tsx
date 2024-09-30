@@ -66,7 +66,7 @@ function App() {
       </main>
       <footer className={styles.footer}>
         <a href="https://github.com/gimdongwon" target="_blank">
-          made by winter1
+          made by winter1(FE2팀 김동원)
         </a>{" "}
         ||{" "}
         <a href="https://github.com/gimdongwon/resort-lottery" target="_blank">
